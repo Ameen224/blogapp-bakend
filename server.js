@@ -18,13 +18,13 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
-
+   
 app.get("/",(req,res)=>{
     res.json({message:"you'r bakend is working "})
     console.log("working");
     
  })
-
+  
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 

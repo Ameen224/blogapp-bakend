@@ -2,7 +2,7 @@
 
 
 const express = require('express');
-const router = express.Router();
+const router = express();
 const userController = require('../controllers/userController');
 const { authMiddleware } = require('../middlewares/authMiddleware');
 
@@ -12,6 +12,7 @@ router.get('/refresh', userController.refreshToken);
 
 router.post('/profile', authMiddleware, userController.updateProfile);
 router.post('/logout', userController.logout);
+router.get('/me',authMiddleware,userController.getCurrentUser)
 
 
 

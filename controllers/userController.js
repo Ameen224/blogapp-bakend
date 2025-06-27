@@ -3,6 +3,7 @@ const User = require('../models/User');
 const sendOtpEmail = require('../utils/sendOtpEmail');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const { response } = require('express');
 require('dotenv').config();
 
 
@@ -15,7 +16,7 @@ function generateTokens(user) {
   );
   const refreshToken = jwt.sign(
     { id: user._id },
-    process.env.JWT_REFRESH, // ✅ fixed
+    process.env.JWT_REFRESH, 
     { expiresIn: '7d' }
   );
   return { accessToken, refreshToken };
@@ -23,6 +24,14 @@ function generateTokens(user) {
 
 // Send OTP to email after captcha verification
 exports.sendOtp = async (req, res) => {
+
+  // const Token= req.cookies.refreshToken
+  // if(Token){
+
+  // }
+
+
+
   const { email, captcha } = req.body;
 
   try {
@@ -98,13 +107,16 @@ exports.verifyOtp = async (req, res) => {
 // Refresh access token using refresh token
 exports.refreshToken = async (req, res) => {
   const token = req.cookies.refreshToken;
+  console.log("token",token);
+  
   if (!token) return res.sendStatus(401);
+  
 
   try {
     const payload = jwt.verify(token, process.env.JWT_REFRESH);
     const user = await User.findById(payload.id);
-
-    if (!user || user.refreshToken !== token) {
+    console.log(user)
+    if (!user ) { 
       return res.sendStatus(403);
     }
 
@@ -113,8 +125,10 @@ exports.refreshToken = async (req, res) => {
       process.env.JWT,
       { expiresIn: '15m' }
     );
-
-    res.json({ accessToken });
+    console.log(accessToken,'access')
+    res.json({ accessToken ,
+      user:{id:user._id,email:user.email,name:user.name,category:user.category}
+    });
 
   } catch (err) {
     console.error('Error in refreshToken:', err.message);
@@ -125,13 +139,16 @@ exports.refreshToken = async (req, res) => {
 // Update name and categories (multiple)
 exports.updateProfile = async (req, res) => {
   const { name, category } = req.body;
+  if (!name || !category || category.length === 0) {
+    return res.status(400).json({ message: "Name and category are required" });
+  }
 
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     user.name = name;
-    user.category = category; // Should be array of ObjectIds
+    user.category = category; 
     await user.save();
 
     res.json({ message: 'Profile updated' });
@@ -168,3 +185,13 @@ exports.logout = async (req, res) => {
     res.status(500).json({ message: 'Logout failed' });
   }
 };
+
+// get current users information
+exports.getCurrentUser= async(req,res)=>{
+  const user =await User.findById(req.user.id)
+  if(!user) return response.json(404).json({message:"user not found"})
+    res.json({user})
+}
+
+
+
