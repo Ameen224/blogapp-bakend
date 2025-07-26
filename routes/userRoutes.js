@@ -1,20 +1,21 @@
-// READFLOW-BAKEND/routes/userRoutes.js
-
+// routes/userRoutes.js
 
 const express = require('express');
-const router = express();
-const userController = require('../controllers/userController');
-const { authMiddleware } = require('../middlewares/authMiddleware');
+const router = express.Router();
 
-router.post('/send-otp', userController.sendOtp);
-router.post('/verify-otp', userController.verifyOtp);
+const userController = require('../controllers/userController');
+const { authMiddleware, sessionAuth } = require('../middlewares/authMiddleware');
+
+// OTP auth (session-based)
+router.post('/send-otp', sessionAuth, userController.sendOtp);
+router.post('/verify-otp', sessionAuth, userController.verifyOtp);
+
+// Refresh access token
 router.get('/refresh', userController.refreshToken);
 
-router.post('/profile', authMiddleware, userController.updateProfile);
-router.post('/logout', userController.logout);
-router.get('/me',authMiddleware,userController.getCurrentUser)
-
-
-
+// Authenticated user routes
+router.get('/me', authMiddleware, userController.getCurrentUser);
+router.put('/profile', authMiddleware, userController.updateProfile);
+router.post('/logout', authMiddleware, userController.logout);
 
 module.exports = router;
