@@ -12,7 +12,7 @@ const helmet = require('helmet');
 const connectDB = require('./config/db');
 const sessionConfig = require('./config/sessionConfig');
 const corsConfig = require('./config/corsConfig');
-const rateLimitMiddleware = require('./config/lateLimitConfig');
+const rateLimitMiddleware = require('./config/rateLimitConfig');
 
 // Connect to MongoDB
 connectDB();
