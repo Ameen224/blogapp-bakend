@@ -7,8 +7,8 @@ const userController = require('../controllers/userController');
 const { authMiddleware, sessionAuth } = require('../middlewares/authMiddleware');
 
 // OTP auth (session-based)
-router.post('/send-otp', sessionAuth, userController.sendOtp);
-router.post('/verify-otp', sessionAuth, userController.verifyOtp);
+router.post('/send-otp',  userController.sendOtp);
+router.post('/verify-otp', userController.verifyOtp);
 
 // Refresh access token
 router.get('/refresh', userController.refreshToken);

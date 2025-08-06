@@ -11,12 +11,7 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    categories: [
-      {
-        type: String, // Store category names as strings
-        ref: "Category", // Reference to Category model
-      },
-    ],
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
